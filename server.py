@@ -1,7 +1,10 @@
 import requests
+import socket
 import json
+import datetime
+import psycopg2
 
-access_token = 'YzI3OWI0NmYtYTc0Yy00NDlkLWE5YjUtZTc0NWE3NDNmNjM2YzIzZjU4NTktYTQ2_PE93_e20dd4bc-1498-4b10-a0ba-ded4423515ea'
+access_token = 'MTc1NDIwYjQtYzFmYy00NWM5LWI5MTAtOTdlZTJiZDkzMjMyZjAwMTIxZDgtYjgz_PE93_e20dd4bc-1498-4b10-a0ba-ded4423515ea'
 
 def test_token(access_token):
     url = 'https://webexapis.com/v1/people/me'
@@ -66,7 +69,7 @@ def create_room(title):
     res = requests.post(url, headers=headers, json=params)
     response_data = res.json()
     room_id = response_data['id']
-    print(json.dumps(res.json(), indent=4))
+    #print(json.dumps(res.json(), indent=4))
     return room_id
 
 def list_room_members(room_id):
@@ -88,7 +91,7 @@ def add_user(person_email, room_id):
     }
     params = {'roomId': room_id, 'personEmail': person_email}
     res = requests.post(url, headers=headers, json=params)
-    print(json.dumps(res.json(), indent=4))
+    #print(json.dumps(res.json(), indent=4))
     return
 
 def send_message(room_id, message):
@@ -99,8 +102,116 @@ def send_message(room_id, message):
     }
     params = {'roomId': room_id, 'markdown': message}
     res = requests.post(url, headers=headers, json=params)
-    print(res.json())
+    #print(res.json())
     return
 
-room_id = create_room("prova")
-send_message(room_id, "ciao")
+def get_mails_db():
+    # Configurazione della connessione al database
+    dbname = 'Cisco_pw'
+    user = 'postgres'
+    password = '21032002'
+    host = 'localhost'
+    port = '5432'
+    
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        
+        # Creazione di un cursore per eseguire query
+        cur = conn.cursor()
+
+        # Esempio di esecuzione di una query
+        cur.execute('SELECT email FROM users')
+
+        # Recupero dei risultati
+        rows = cur.fetchall()
+
+        # Chiusura del cursore e connessione al database
+        cur.close()
+        conn.close()
+
+        # Stampa una frase se la connessione è avvenuta con successo
+        print('Connessione al database avvenuta con successo!')
+
+        return rows
+    except psycopg2.Error as e:
+        # Stampa un messaggio di errore se la connessione fallisce
+        print('Errore durante la connessione al database:', e)
+        return []
+
+
+HOST = 'localhost'  # Indirizzo IP del server
+PORT = 6565  # Numero di porta del server
+
+# Crea un socket TCP/IP
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Associa il socket all'indirizzo e alla porta desiderati
+server_socket.bind((HOST, PORT))
+
+# Mette il socket in ascolto
+server_socket.listen(1)
+
+print('Server in ascolto su {}:{}'.format(HOST, PORT))
+
+# Accetta la connessione dal client
+client_socket, client_address = server_socket.accept()
+
+# Data e ora della connessione (ovvero data e ora dell'incident) 
+now = datetime.datetime.now()
+date = now.strftime('%Y-%m-%d')
+time = now.strftime('%H:%M:%S')
+
+print('Connessione da:', client_address)
+
+while True:
+    # Riceve i dati inviati dal client
+    data = client_socket.recv(1024).decode()
+
+    if not data:
+        # Se non ci sono dati, il client ha chiuso la connessione
+        break
+
+    # Decodifica il JSON ricevuto
+    json_data = json.loads(data)
+
+    # Elabora i dati ricevuti
+    incident = json_data['incident']
+    risk = json_data['risk']
+    ip = json_data['ip']
+
+    # Crea una risposta in formato JSON
+    response = {
+        'message': 'Dati ricevuti correttamente',
+        'incident': incident,
+        'risk': risk,
+        'ip' : ip
+    }
+
+    # Codifica la risposta in JSON
+    response_json = json.dumps(response)
+
+    # Invia la risposta al client
+    client_socket.sendall(response_json.encode())
+
+# Chiude la connessione
+client_socket.close()
+server_socket.close()
+
+
+room_id = create_room("War Room {} {}".format(date, time))
+
+mails = get_mails_db()
+
+for mail in mails:
+    #add_user(mail, room_id)
+    print("User {} added".format(mail))
+
+#il bot manderà questo messaggio
+send_message(room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
