@@ -145,7 +145,6 @@ def get_mails_db():
         print('Errore durante la connessione al database:', e)
         return []
 
-
 HOST = 'localhost'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
 
@@ -160,25 +159,21 @@ server_socket.listen(1)
 
 print('Server in ascolto su {}:{}'.format(HOST, PORT))
 
-# Accetta la connessione dal client
-client_socket, client_address = server_socket.accept()
-
-# Data e ora della connessione (ovvero data e ora dell'incident) 
-now = datetime.datetime.now()
-date = now.strftime('%Y-%m-%d')
-time = now.strftime('%H:%M:%S')
-
-print('Connessione da:', client_address)
-
 while True:
-    # Riceve i dati inviati dal client
+    # Accept a connection from a client
+    client_socket, client_address = server_socket.accept()
+
+    # Data e ora della connessione (ovvero data e ora dell'incident) 
+    now = datetime.datetime.now()
+    date = now.strftime('%Y-%m-%d')
+    time = now.strftime('%H:%M:%S')
+
+    print('Connessione da:', client_address)
+
+    # Receive data sent by the client
     data = client_socket.recv(1024).decode()
 
-    if not data:
-        # Se non ci sono dati, il client ha chiuso la connessione
-        break
-
-    # Decodifica il JSON ricevuto
+    # Process the received JSON data
     json_data = json.loads(data)
 
     # Elabora i dati ricevuti
@@ -189,9 +184,6 @@ while True:
     # Crea una risposta in formato JSON
     response = {
         'message': 'Dati ricevuti correttamente',
-        'incident': incident,
-        'risk': risk,
-        'ip' : ip
     }
 
     # Codifica la risposta in JSON
@@ -200,18 +192,20 @@ while True:
     # Invia la risposta al client
     client_socket.sendall(response_json.encode())
 
-# Chiude la connessione
-client_socket.close()
+    # Chiude la connessione
+    client_socket.close()
+
+    room_id = create_room("War Room {} {}".format(date, time))
+
+    mails = get_mails_db()
+
+    for mail in mails:
+        mail = str(mail)[2:-3]
+        #add_user(mail, room_id)
+        print("User {} added".format(mail))
+
+    #il bot manderà questo messaggio
+    send_message(room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+
+# Close the server socket
 server_socket.close()
-
-
-room_id = create_room("War Room {} {}".format(date, time))
-
-mails = get_mails_db()
-
-for mail in mails:
-    #add_user(mail, room_id)
-    print("User {} added".format(mail))
-
-#il bot manderà questo messaggio
-send_message(room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
