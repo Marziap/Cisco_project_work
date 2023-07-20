@@ -2,9 +2,15 @@ import requests
 import socket
 import json
 import datetime
-import psycopg2
+#import psycopg2
+import os
 
-access_token = 'MTc1NDIwYjQtYzFmYy00NWM5LWI5MTAtOTdlZTJiZDkzMjMyZjAwMTIxZDgtYjgz_PE93_e20dd4bc-1498-4b10-a0ba-ded4423515ea'
+from webex_bot.webex_bot import WebexBot
+from gpt import Chat
+
+access_token = 'YOUR ACCESS TOKEN HERE'
+
+bot_token = os.getenv("BOT_TOKEN")
 
 def test_token(access_token):
     url = 'https://webexapis.com/v1/people/me'
@@ -94,7 +100,7 @@ def add_user(person_email, room_id):
     #print(json.dumps(res.json(), indent=4))
     return
 
-def send_message(room_id, message):
+def send_message(access_token, room_id, message):
     url = 'https://webexapis.com/v1/messages'
     headers = {
     'Authorization': 'Bearer {}'.format(access_token),
@@ -144,6 +150,18 @@ def get_mails_db():
         # Stampa un messaggio di errore se la connessione fallisce
         print('Errore durante la connessione al database:', e)
         return []
+
+
+def start_bot():
+    bot = WebexBot( 
+        teams_bot_token = bot_token,
+        approved_users=["matteo.rocco68@gmail.com", "marziapirozzi2002@gmail.com"],
+    )
+
+    bot.add_command(Chat())
+    bot.run()
+
+
 
 HOST = 'localhost'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
@@ -197,15 +215,19 @@ while True:
 
     room_id = create_room("War Room {} {}".format(date, time))
 
-    mails = get_mails_db()
+    '''mails = get_mails_db()
 
     for mail in mails:
         mail = str(mail)[2:-3]
-        #add_user(mail, room_id)
+        add_user(mail, room_id)
         print("User {} added".format(mail))
+    '''
+    
+    add_user("matictest@webex.bot", room_id)
 
     #il bot manderà questo messaggio
-    send_message(room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    start_bot()
 
 # Close the server socket
 server_socket.close()

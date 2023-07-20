@@ -15,14 +15,14 @@ incident = input('Inserisci l\'incident: ')
 risk = input('Inserisci il risk: ')
 ip = input('Inserisci l\'ip: ')
 
-# Crea un dizionario per i dati
+#Dati da inviare
 data = {
     'incident': incident,
     'risk': risk,
     'ip': ip
 }
 
-# Codifica il dizionario in JSON
+# Trasforma dati in JSON
 json_data = json.dumps(data)
 
 # Invia il JSON al server
@@ -35,9 +35,6 @@ response = client_socket.recv(1024).decode()
 response_json = json.loads(response)
 
 print('Risposta dal server:', response_json['message'])
-#print('Incident:', response_json['incident'])
-#print('Risk:', response_json['risk'])
-#print('Ip:', response_json['ip'])
 
 # Chiude la connessione
 client_socket.close()
