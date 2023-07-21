@@ -1,5 +1,6 @@
 import socket
 import json
+import random
 
 HOST = 'localhost'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
@@ -11,9 +12,14 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
 
 # Legge l'input dall'utente
-incident = input('Inserisci l\'incident: ')
-risk = input('Inserisci il risk: ')
-ip = input('Inserisci l\'ip: ')
+incident = "prova Incident"
+print(incident)
+
+risk = random.randint(0, 5)
+print(str(risk))
+
+ip = "10.10.10.10"
+print(ip)
 
 #Dati da inviare
 data = {

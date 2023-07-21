@@ -225,8 +225,17 @@ while True:
     
     add_user("matictest@webex.bot", room_id)
 
+
+    #APERTURA CARD DI BENVENUTO
+    with open("./welcome_msg.json", "r+") as card:
+        WELCOME_CARD = json.load(card)
+
+
+
     #il bot manderà questo messaggio
-    send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    #send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    send_message(bot_token, room_id, "chat ciao come stai?")
+
     start_bot()
 
 # Close the server socket

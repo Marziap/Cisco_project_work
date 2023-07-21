@@ -1,0 +1,53 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Cosa è successo ?",
+            "wrap": true,
+            "size": "Medium",
+            "weight": "Bolder"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "FactSet",
+                            "facts": [
+                                {
+                                    "title": "Incident",
+                                    "value": ""
+                                },
+                                {
+                                    "title": "Ora",
+                                    "value": ""
+                                },
+                                {
+                                    "title": "IP macchina",
+                                    "value": ""
+                                },
+                                {
+                                    "title": "Rischio",
+                                    "value": ""
+                                }
+                            ],
+                            "spacing": "Large",
+                            "separator": true
+                        }
+                    ],
+                    "spacing": "Large",
+                    "horizontalAlignment": "Center",
+                    "verticalContentAlignment": "Center"
+                }
+            ]
+        }
+    ],
+    "minHeight": "0px",
+    "verticalContentAlignment": "Center"
+}
