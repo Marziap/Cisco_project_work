@@ -8,7 +8,7 @@ import os
 from webex_bot.webex_bot import WebexBot
 from gpt import Chat
 
-access_token = 'YOUR ACCESS TOKEN HERE'
+access_token = os.getenv("WEBEX_TOKEN")
 
 bot_token = os.getenv("BOT_TOKEN")
 
@@ -226,15 +226,8 @@ while True:
     add_user("matictest@webex.bot", room_id)
 
 
-    #APERTURA CARD DI BENVENUTO
-    with open("./welcome_msg.json", "r+") as card:
-        WELCOME_CARD = json.load(card)
-
-
-
     #il bot manderà questo messaggio
-    #send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
-    send_message(bot_token, room_id, "chat ciao come stai?")
+    send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
 
     start_bot()
 
