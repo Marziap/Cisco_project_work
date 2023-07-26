@@ -2,11 +2,14 @@ import requests
 import socket
 import json
 import datetime
-#import psycopg2
+import psycopg2
 import os
 
 from webex_bot.webex_bot import WebexBot
 from gpt import Chat
+from bot_command import Add
+from bot_command import AddRole
+
 
 access_token = os.getenv("WEBEX_TOKEN")
 
@@ -111,12 +114,12 @@ def send_message(access_token, room_id, message):
     #print(res.json())
     return
 
-def get_mails_db():
+def get_mails_db(ruolo):
     # Configurazione della connessione al database
-    dbname = 'Cisco_pw'
+    dbname = 'dbmtkmnd'
     user = 'postgres'
-    password = '21032002'
-    host = 'localhost'
+    password = 'R:=H{98{^43}`kq}5=u_Sx*RJNp_xDF<'
+    host = 'ls-e8c110d515b7ab64b18f871e331fdccaaded850e.cngbiakr7x0v.eu-central-1.rds.amazonaws.com'
     port = '5432'
     
     try:
@@ -133,7 +136,7 @@ def get_mails_db():
         cur = conn.cursor()
 
         # Esempio di esecuzione di una query
-        cur.execute('SELECT email FROM users')
+        cur.execute("SELECT email FROM users WHERE disponibilità = true AND ruolo = '{}' ORDER BY score fetch first 2 rows only".format(ruolo))
 
         # Recupero dei risultati
         rows = cur.fetchall()
@@ -151,6 +154,84 @@ def get_mails_db():
         print('Errore durante la connessione al database:', e)
         return []
 
+def update_score_db(mail):
+    # Configurazione della connessione al database
+    dbname = 'dbmtkmnd'
+    user = 'postgres'
+    password = 'R:=H{98{^43}`kq}5=u_Sx*RJNp_xDF<'
+    host = 'ls-e8c110d515b7ab64b18f871e331fdccaaded850e.cngbiakr7x0v.eu-central-1.rds.amazonaws.com'
+    port = '5432'
+    
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        
+        # Creazione di un cursore per eseguire query
+        cur = conn.cursor()
+        
+        # Esempio di esecuzione di una query
+        cur.execute("UPDATE users SET score = score + 1 WHERE email = '" + mail + "'")
+
+        # Recupero dei risultati
+        #rows = cur.fetchall()
+
+        # Chiusura del cursore e connessione al database
+        cur.close()
+        conn.close()
+
+        # Stampa una frase se la connessione è avvenuta con successo
+        #print('score updated')
+
+        return
+    except psycopg2.Error as e:
+        # Stampa un messaggio di errore se la connessione fallisce
+        print('Errore durante la connessione al database:', e)
+        return []
+
+def update_dispo_db(mail):
+    # Configurazione della connessione al database
+    dbname = 'dbmtkmnd'
+    user = 'postgres'
+    password = 'R:=H{98{^43}`kq}5=u_Sx*RJNp_xDF<'
+    host = 'ls-e8c110d515b7ab64b18f871e331fdccaaded850e.cngbiakr7x0v.eu-central-1.rds.amazonaws.com'
+    port = '5432'
+    
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        
+        # Creazione di un cursore per eseguire query
+        cur = conn.cursor()
+        # Esempio di esecuzione di una query
+        cur.execute("UPDATE users SET disponibilità = not disponibilità WHERE email = '{}'".format(mail))
+
+        # Recupero dei risultati
+        #rows = cur.fetchall()
+
+        # Chiusura del cursore e connessione al database
+        cur.close()
+        conn.close()
+
+        # Stampa una frase se la connessione è avvenuta con successo
+        #print('dispo updated')
+
+        return
+    except psycopg2.Error as e:
+        # Stampa un messaggio di errore se la connessione fallisce
+        print('Errore durante la connessione al database:', e)
+        return []
 
 def start_bot():
     bot = WebexBot( 
@@ -159,6 +240,8 @@ def start_bot():
     )
 
     bot.add_command(Chat())
+    bot.add_command(Add())
+    bot.add_command(AddRole())
     bot.run()
 
 
@@ -215,19 +298,22 @@ while True:
 
     room_id = create_room("War Room {} {}".format(date, time))
 
-    '''mails = get_mails_db()
+    mails = get_mails_db("analyst")
 
     for mail in mails:
         mail = str(mail)[2:-3]
         add_user(mail, room_id)
-        print("User {} added".format(mail))
-    '''
+        #print("User {} added".format(mail))
+        update_score_db(mail)
+        update_dispo_db(mail)
     
     add_user("matictest@webex.bot", room_id)
 
 
     #il bot manderà questo messaggio
     send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+
+    #dopo il report update_dispo_db(mail) a true
 
     start_bot()
 
