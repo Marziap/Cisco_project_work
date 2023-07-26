@@ -11,19 +11,20 @@ $f$
 $f$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER store_password
-BEFORE INSERT ON users
-FOR EACH ROW
-EXECUTE FUNCTION store_password();
-
 CREATE TABLE users(
   id serial not null primary key, 
   email email_type not null, 
   password bytea, 
   ruolo ruoli not null, 
-  disponibilità boolena not null default true,
+  disponibilità boolean not null default true,
   score int not null default 0
 );
+
+CREATE OR REPLACE TRIGGER store_password
+BEFORE INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION store_password();
+
 
 INSERT INTO users (email, password, ruolo) VALUES ('matteo.rocco68@gmail.com', 'mattrocc68', 'admin');
 INSERT INTO users (email, ruolo) VALUES ('Rodfalanga@outlook.it', 'analyst');
