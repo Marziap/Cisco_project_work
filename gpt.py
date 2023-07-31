@@ -1,6 +1,9 @@
 import openai
 import os
 from webex_bot.models.command import Command
+from dotenv import load_dotenv
+
+load_dotenv()
 
 openai.api_key =  os.getenv("OPENAI_TOKEN")
 

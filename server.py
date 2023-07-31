@@ -109,7 +109,7 @@ def send_message(access_token, room_id, message):
     'Authorization': 'Bearer {}'.format(access_token),
     'Content-Type': 'application/json'
     }
-    params = {'roomId': room_id, 'markdown': message}
+    params = {'roomId': room_id, 'markdown': "```\n"+message+"\n```"}
     res = requests.post(url, headers=headers, json=params)
     #print(res.json())
     return
@@ -235,10 +235,10 @@ def update_dispo_db(mail):
         print('Errore durante la connessione al database:', e)
         return []
 
-def start_bot():
+def start_bot(room_id):
     bot = WebexBot( 
         teams_bot_token = bot_token,
-        approved_users=["matteo.rocco68@gmail.com", "marziapirozzi2002@gmail.com"],
+        approved_rooms = [room_id],
     )
 
     bot.add_command(Chat())
@@ -313,11 +313,11 @@ while True:
 
 
     #il bot manderà questo messaggio
-    send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    send_message(bot_token, room_id, "incident del giorno: {}\nAvvenuto alle ore {} del {}\nSu macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
 
     #dopo il report update_dispo_db(mail) a true
 
-    start_bot()
+    start_bot(room_id)
 
 # Close the server socket
 server_socket.close()
