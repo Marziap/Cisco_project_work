@@ -182,6 +182,7 @@ def update_score_db(mail):
         #rows = cur.fetchall()
 
         # Chiusura del cursore e connessione al database
+        conn.commit()
         cur.close()
         conn.close()
 
@@ -221,6 +222,7 @@ def update_dispo_db(mail):
         #rows = cur.fetchall()
 
         # Chiusura del cursore e connessione al database
+        conn.commit()
         cur.close()
         conn.close()
 
