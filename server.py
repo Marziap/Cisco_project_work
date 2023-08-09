@@ -11,6 +11,8 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 from gpt import Chat
 from bot_command import Add
 from bot_command import AddRole
+from bot_command import GetActivity
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -267,6 +269,7 @@ def start_bot(room_id):
     bot.add_command(Chat())
     bot.add_command(Add())
     bot.add_command(AddRole())
+    bot.add_command(GetActivity())
     bot.run()
 
     
