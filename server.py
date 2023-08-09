@@ -6,10 +6,15 @@ import psycopg2
 import os
 
 from webex_bot.webex_bot import WebexBot
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+
 from gpt import Chat
 from bot_command import Add
 from bot_command import AddRole
+from bot_command import GetActivity
+from dotenv import load_dotenv
 
+load_dotenv()
 
 access_token = os.getenv("WEBEX_TOKEN")
 
@@ -113,6 +118,21 @@ def send_message(access_token, room_id, message):
     res = requests.post(url, headers=headers, json=params)
     #print(res.json())
     return
+
+def send_file(access_token, room_id):
+     url = 'https://webexapis.com/v1/messages'
+
+     m = MultipartEncoder({'roomId': room_id,
+                           'text':"File contenente le activity dell'ip specificato",
+                           'files': ('AllActivity.txt', open('./files/activity.txt', 'rb'), 'text/plain')
+                         })
+     headers = {
+        'Authorization': 'Bearer {}'.format(access_token),
+        'Content-Type': m.content_type
+    }
+     res = requests.post(url, data=m, headers=headers)
+     return res.text
+
 
 def get_mails_db(ruolo):
     # Configurazione della connessione al database
@@ -244,6 +264,7 @@ def start_bot(room_id):
     bot.add_command(Chat())
     bot.add_command(Add())
     bot.add_command(AddRole())
+    bot.add_command(GetActivity())
     bot.run()
 
 
