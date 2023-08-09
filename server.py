@@ -11,8 +11,6 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 from gpt import Chat
 from bot_command import Add
 from bot_command import AddRole
-from bot_command import GetActivity
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -112,9 +110,9 @@ def send_message(access_token, room_id, message):
     url = 'https://webexapis.com/v1/messages'
     headers = {
     'Authorization': 'Bearer {}'.format(access_token),
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
     }
-    params = {'roomId': room_id, 'markdown': "```\n"+message+"\n```"}
+    params = {'roomId': room_id, 'markdown': message}
     res = requests.post(url, headers=headers, json=params)
     #print(res.json())
     return
@@ -156,7 +154,7 @@ def get_mails_db(ruolo):
         cur = conn.cursor()
 
         # Esempio di esecuzione di una query
-        cur.execute("SELECT email FROM users WHERE disponibilità = true AND ruolo = '{}' ORDER BY score fetch first 2 rows only".format(ruolo))
+        cur.execute("SELECT email FROM users WHERE disponibilità = true AND ruolo = '{}'".format(ruolo))
 
         # Recupero dei risultati
         rows = cur.fetchall()
@@ -191,12 +189,14 @@ def update_score_db(mail):
             host=host,
             port=port
         )
-        
+
         # Creazione di un cursore per eseguire query
         cur = conn.cursor()
         
+
         # Esempio di esecuzione di una query
-        cur.execute("UPDATE users SET score = score + 1 WHERE email = '" + mail + "'")
+        cur.execute("UPDATE users SET score = score + 1 WHERE email = '{}'".format(mail))
+
 
         # Recupero dei risultati
         #rows = cur.fetchall()
@@ -213,6 +213,9 @@ def update_score_db(mail):
     except psycopg2.Error as e:
         # Stampa un messaggio di errore se la connessione fallisce
         print('Errore durante la connessione al database:', e)
+        return []
+    except Exception as e:
+        print(e)
         return []
 
 def update_dispo_db(mail):
@@ -264,9 +267,9 @@ def start_bot(room_id):
     bot.add_command(Chat())
     bot.add_command(Add())
     bot.add_command(AddRole())
-    bot.add_command(GetActivity())
     bot.run()
 
+    
 
 
 HOST = 'localhost'  # Indirizzo IP del server
@@ -324,7 +327,8 @@ while True:
     mails = get_mails_db("analyst")
 
     for mail in mails:
-        mail = str(mail)[2:-3]
+        mail = mail[0]
+        #mail = str(mail)[2:-3]
         add_user(mail, room_id)
         #print("User {} added".format(mail))
         update_score_db(mail)
@@ -334,7 +338,7 @@ while True:
 
 
     #il bot manderà questo messaggio
-    send_message(bot_token, room_id, "incident del giorno: {}\nAvvenuto alle ore {} del {}\nSu macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
+    send_message(bot_token, room_id, "incident del giorno: {}\n Avvenuto alle ore {} del {}\n Su macchina con ip: {}\nRischio valutato di livello: {}".format(incident, time, date, ip, risk))
 
     #dopo il report update_dispo_db(mail) a true
 
