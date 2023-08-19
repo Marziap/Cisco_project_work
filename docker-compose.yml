@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  update:
+    build:
+      context: .
+      dockerfile: Dockerfile.update
+    environment:
+      - UMBRELLA_TOKEN=
+    restart: always
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      - WEBEX_TOKEN=
+      - BOT_TOKEN=
+    ports:
+      - 6565:6565
+    depends_on:
+      - update
+    restart: always
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - server
+    restart: always
+      
