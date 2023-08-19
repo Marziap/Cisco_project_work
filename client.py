@@ -1,6 +1,7 @@
 import socket
 import json
 import random
+import datetime
 
 HOST = 'localhost'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
@@ -21,11 +22,20 @@ print(str(risk))
 ip = "10.10.10.10"
 print(ip)
 
+
+now = datetime.datetime.now()
+date = now.strftime('%Y-%m-%d')
+time = now.strftime('%H:%M:%S')
+now = int(round(now.timestamp()))
+
 #Dati da inviare
 data = {
     'incident': incident,
     'risk': risk,
-    'ip': ip
+    'ip': ip,
+    'now': now,
+    'date': date,
+    'time': time,
 }
 
 # Trasforma dati in JSON

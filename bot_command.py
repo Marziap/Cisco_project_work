@@ -1,12 +1,12 @@
 import json
-import server
 import asyncio
-from test import ListAllActivity
+import functions
+import time
+import datetime
 
 from webex_bot.models.command import Command
 from webex_bot.models.response import Response
 from adaptivecardbuilder import *
-
 
 
 with open("cards_files/add_card.json", "r") as card:
@@ -31,9 +31,9 @@ class Add(Command):
         
     def execute(self, message, attachment_actions, activity):
         email = attachment_actions.inputs['mail']
-        server.add_user(email, server.room_id)
-        server.update_score_db(email)
-        server.update_dispo_db(email)
+        functions.add_user(email, functions.room_id)
+        functions.update_score_db(email)
+        functions.update_dispo_db(email)
         return
     
 class AddRole(Command):
@@ -45,14 +45,14 @@ class AddRole(Command):
         )
     def execute(self, message, attachment_actions, activity):
         ruolo = attachment_actions.inputs['ruoli']
-        mails = server.get_mails_db(ruolo)
+        mails = functions.get_mails_db(ruolo)
         for mail in mails :
             mail = str(mail)[2:-3]
-            server.add_user(mail, server.room_id)
-            server.update_score_db(mail)
-            server.update_dispo_db(mail)
+            functions.add_user(mail, functions.room_id)
+            functions.update_score_db(mail)
+            functions.update_dispo_db(mail)
         return
-        
+'''       
 class WelcomeMsg(Command):
     def __init__(self):
         super().__init__(
@@ -63,14 +63,14 @@ class WelcomeMsg(Command):
     def execute(self, message, attachment_actions, activity):
         card = AdaptiveCard()
         
-        card.add(TextBlock(text = f"{server.incident}", size = "Medium", weight = "Bolder"))
+        card.add(TextBlock(text = f"{json_data['incident']}", size = "Medium", weight = "Bolder"))
         card.add(ColumnSet())
         card.add(Column(widht = "stretch"))
         card.add(FactSet())
-        card.add(Fact(title = "Orario: ", value = f"{server.time}"))
-        card.add(Fact(title = "Giorno: ", value = f"{server.date}"))
-        card.add(Fact(title = "IP vittima: ", value = f"{server.ip}"))
-        card.add(Fact(title = "Rischio lv: ", value = f"{server.risk}"))
+        card.add(Fact(title = "Orario: ", value = f"{time}"))
+        card.add(Fact(title = "Giorno: ", value = f"{date}"))
+        card.add(Fact(title = "IP vittima: ", value = f"{ip}"))
+        card.add(Fact(title = "Rischio lv: ", value = f"{risk}"))
 
         card_data = json.loads(asyncio.run(card.to_json()))
         card_payload = {
@@ -83,7 +83,7 @@ class WelcomeMsg(Command):
         response.attachments = card_payload
 
         return  response
-
+'''
 
 class GetActivity(Command):
     def __init__(self):
@@ -95,11 +95,14 @@ class GetActivity(Command):
     def execute(self, message, attachment_actions, activity):
         device = attachment_actions.inputs['setIP']
         verdict = attachment_actions.inputs['setVerdict']
-        time_to = int(round((server.now).timestamp())) * 1000
+        
+        now = datetime.datetime.fromtimestamp(functions.json_data['now'])
+        #now = datetime.datetime.strptime((functions.json_data['now']), "%Y-%m-%d %H:%M:%S")
+        time_to = int(round(now.timestamp())) * 1000
         time_from = time_to - 600000
 
         
-        list = ListAllActivity(device, time_to, time_from, 1000, verdict)
+        list = functions.ListAllActivity(device, time_to, time_from, 1000, verdict)
         var = str(list)
 
         file = open("./files/activity.txt", "w+")
@@ -112,7 +115,8 @@ class GetActivity(Command):
 
         file.write(var)
 
-        text = server.send_file(server.access_token, server.room_id)
+        text = functions.send_file(functions.access_token, functions.room_id)
 
         file.close()
         return
+

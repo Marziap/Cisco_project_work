@@ -36,4 +36,3 @@ def ListAllActivity(ip, time_to, time_from, limit, verdict):
             list.append(dict)
 
     return list
-
