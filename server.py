@@ -4,6 +4,7 @@ from gpt import Chat
 from bot_command import Add
 from bot_command import AddRole
 from bot_command import GetActivity
+from bot_command import Done
 from webex_bot.webex_bot import WebexBot
 
 def start_bot(room_id):
@@ -16,10 +17,21 @@ def start_bot(room_id):
     bot.add_command(Add())
     bot.add_command(AddRole())
     bot.add_command(GetActivity())
+    bot.add_command(Done())
     bot.run()
 
+        #TODO: INSERIRE IL PATH DEL FILE DA PASSARE ALLA FUNZIONE -> NON NECESSARIO
+        #TODO: REFRESHARE TOKEN UMBRELLA 
+        #TODO: PULSANTE DONE PER REPORT FINALE  -> FATTO
+        #TODO: PASSARE AD ARCHITETTURA REST
+        #TODO: COMANDO DI BAN PER UN IP
+        #TODO: IL BOT DEVE RISPONDERE ALLA ROOM CHE GLI HA INVIATO IL MESSAGGIO
+        #TODO: CRITERIO DI SCELTA DAL DATABASE + REFRESH OGNI VOLTA CHE SI ESCE DA UNA ROOM
+        #TODO: ATTIVARE UNA CALL
+        #TODO: CERCARE DI GESTIRE IN ACTIVITY LA RICHIESTA ALL
 
-HOST = 'localhost'  # Indirizzo IP del server
+
+HOST = '0.0.0.0'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
 
 server_socket = functions.createSocket(HOST, PORT)
@@ -47,7 +59,7 @@ while True:
 
     # Chiude la connessione
     client_socket.close()
-
+    
     functions.warRoom(functions.json_data['date'], functions.json_data['time'])
 
     #il bot manderà questo messaggio

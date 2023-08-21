@@ -14,7 +14,7 @@ access_token = os.getenv("WEBEX_TOKEN")
 
 bot_token = os.getenv("BOT_TOKEN")
 
-umbrella_token = os.getenv("UMBRELLA_TOKEN")
+auth_umbrella = os.getenv("UMBRELLA_AUTH")
 
 room_id = None
 json_data= None
@@ -94,8 +94,8 @@ def list_room_members(room_id):
     }
     params = {'roomId': room_id}
     res = requests.get(url, headers=headers, params=params)
-    print(json.dumps(res.json(), indent=4))
-    return
+    #print(json.dumps(res.json(), indent=4))
+    return res.json()
 
 def add_user(person_email, room_id):
     url = 'https://webexapis.com/v1/memberships'
@@ -114,7 +114,7 @@ def send_message(access_token, room_id, message):
     'Authorization': 'Bearer {}'.format(access_token),
     'Content-Type': 'application/json',
     }
-    params = {'roomId': room_id, 'markdown': message}
+    params = {'roomId': room_id, 'markdown': '``` txt\n' + message + '\n```'}
     res = requests.post(url, headers=headers, json=params)
     #print(res.json())
     return
@@ -261,13 +261,15 @@ def update_dispo_db(mail):
 
 def ListAllActivity(ip, time_to, time_from, limit, verdict):
     url = "https://api.umbrella.com/reports/v2/activity?from={}&to={}&limit={}&ip={}&verdict={}".format(time_from, time_to, limit, ip, verdict)
+
+
+    umbrella_tk = update_umbrellaTK()
     headers = {
-        'Authorization':'Bearer {}'.format(umbrella_token)
+        'Authorization':'Bearer {}'.format(umbrella_tk)
     }
-    
+
     res = requests.get(url, headers = headers)
-    #print(json.dumps(res.json(), indent = 4))
-    
+
     try:
         response_data = res.json()
     except json.JSONDecodeError as e:
@@ -325,6 +327,17 @@ def data_from_client(client_socket):
 
     return
 
+def update_umbrellaTK():
+    url = "https://api.umbrella.com/auth/v2/token"
+    payload = 'grant_type=client_credentials'
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+        "Authorization": f"Basic {auth_umbrella}"
+    }
+    response = requests.request('POST', url, headers=headers, data = payload)
+    token = json.loads(response.text)
+    return token['access_token']
 
 
 

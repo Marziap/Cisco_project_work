@@ -52,6 +52,7 @@ class AddRole(Command):
             functions.update_score_db(mail)
             functions.update_dispo_db(mail)
         return
+
 '''       
 class WelcomeMsg(Command):
     def __init__(self):
@@ -101,7 +102,6 @@ class GetActivity(Command):
         time_to = int(round(now.timestamp())) * 1000
         time_from = time_to - 600000
 
-        
         list = functions.ListAllActivity(device, time_to, time_from, 1000, verdict)
         var = str(list)
 
@@ -114,9 +114,25 @@ class GetActivity(Command):
         var = var.replace(", ", "\n")
 
         file.write(var)
+        file.close()
 
         text = functions.send_file(functions.access_token, functions.room_id)
 
-        file.close()
+        
         return
 
+class Done(Command):
+    def __init__(self):
+        super().__init__(
+            command_keyword = "done",
+            help_message = "Get the report and exit the room.",
+            card = None,
+        )  
+    def execute(self, message, attachment_actions, activity):
+        res = functions.list_room_members(functions.room_id)
+
+        for el in res['items']:
+            functions.update_dispo_db(el['personEmail'])
+
+
+        return

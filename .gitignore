@@ -2,8 +2,3 @@
 /__pycache__
 .env
 updateToken.py
-docker-compose.yml
-Dockerfile.server
-Dockerfile.client
-Dockerfile.update
-test.py

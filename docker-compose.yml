@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      - WEBEX_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - BOT_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - DB_PASSW=ProgettoCyber!
+      - DB_HOST=37.119.114.12
+      - UMBRELLA_AUTH=ZTc5ODRlY2E3MDQwNDJlNjg3ZmE0MDIyMTE4ZGM1ZTM6ZTRjNjg5NjU2YmQxNGZkYWIwZWQ1YjViNWNkNjA1M2U=
+    ports:
+      - 6565:6565
+    restart: always
+    volumes: 
+      - ./cards_files:/app/cards_files
+      - ./files:/app/files
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - server
+    restart: always
+      

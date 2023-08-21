@@ -3,7 +3,7 @@ import json
 import random
 import datetime
 
-HOST = 'localhost'  # Indirizzo IP del server
+HOST = 'server'  # Indirizzo IP del server
 PORT = 6565  # Numero di porta del server
 
 # Crea un socket TCP/IP
