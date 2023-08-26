@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  rest:
+    build:
+      context: .
+      dockerfile: Dockerfile.rest
+    environment:
+      - DB_URI=postgresql://postgres:ProgettoCyber!@37.119.114.12:5432/db_matic
+      - BOT_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - FLASK_RUN_PORT=3000
+    ports:
+      - 3000:3000/tcp
+    restart: always
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    environment:
+      - DB_URI=postgresql://postgres:ProgettoCyber!@37.119.114.12:5432/db_matic
+      - BOT_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+    restart: always
+      

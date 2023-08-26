@@ -1,0 +1,113 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Get All Activities",
+            "wrap": true,
+            "size": "Large",
+            "weight": "Bolder"
+        },
+        {
+            "type": "Input.Text",
+            "placeholder": "Please give me an IP.",
+            "id": "setIP"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "All",
+                    "value": "all"
+                },
+                {
+                    "title": "Allowed",
+                    "value": "allowed"
+                },
+                {
+                    "title": "Blocked",
+                    "value": "blocked"
+                },
+                {
+                    "title": "Proxied",
+                    "value": "proxied"
+                }
+            ],
+            "placeholder": "Select a category to analyze",
+            "id": "setVerdict"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "DAL",
+                            "wrap": true,
+                            "horizontalAlignment": "Center",
+                            "size": "Large",
+                            "separator": true,
+                            "weight": "Bolder"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "AL",
+                            "wrap": true,
+                            "horizontalAlignment": "Center",
+                            "size": "Large",
+                            "separator": true,
+                            "weight": "Bolder"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "Input.Date",
+                            "id": "date_from_ID"
+                        },
+                        {
+                            "type": "Input.Date",
+                            "id": "date_to_ID"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "Input.Time",
+                            "id": "time_from_ID"
+                        },
+                        {
+                            "type": "Input.Time",
+                            "id": "time_to_ID"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Submit",
+                    "style": "positive",
+                    "id": "submitButton",
+                    "data": {
+                        "callback_keyword": "activity"
+                    }
+                }
+            ]
+        }
+    ]
+}

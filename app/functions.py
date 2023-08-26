@@ -3,6 +3,7 @@ import socket
 import json
 import psycopg2
 import os
+import openai
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
@@ -15,6 +16,8 @@ access_token = os.getenv("WEBEX_TOKEN")
 bot_token = os.getenv("BOT_TOKEN")
 
 auth_umbrella = os.getenv("UMBRELLA_AUTH")
+
+openai.api_key =  os.getenv("OPENAI_TOKEN")
 
 room_id = None
 json_data= None
@@ -62,6 +65,16 @@ def list_rooms():
     print(json.dumps(res.json(), indent=4))
     return
 
+def delete_room(room_id):
+    url = f'https://webexapis.com/v1/rooms/{room_id}'
+    headers = {
+    'Authorization': 'Bearer {}'.format(access_token),
+    'Content-Type': 'application/json'
+    }
+    res = requests.delete(url, headers=headers)
+    print(json.dumps(res.json(), indent=4))
+    return
+
 def get_room_details(room_id):
     url = 'https://webexapis.com/v1/rooms/{}/meetingInfo'.format(room_id)
     headers = {
@@ -69,8 +82,8 @@ def get_room_details(room_id):
     'Content-Type': 'application/json'
     }
     res = requests.get(url, headers=headers)
-    print(json.dumps(res.json(), indent=4))
-    return
+    #print(json.dumps(res.json(), indent=4))
+    return (json.dumps(res.json(), indent=4))
 
 def create_room(title):
     url = 'https://webexapis.com/v1/rooms'
@@ -315,7 +328,7 @@ def warRoom(date, time):
         update_dispo_db(mail)
     
     add_user("matictest@webex.bot", room_id)  
-    return
+    return room_id
 
 def data_from_client(client_socket):
     # Receive data sent by the client
@@ -339,9 +352,19 @@ def update_umbrellaTK():
     token = json.loads(response.text)
     return token['access_token']
 
+def gpt3_chat(input_message):
+    response = openai.Completion.create(
+        engine='text-davinci-003',
+        prompt=input_message,
+        max_tokens=100,
+        temperature=0.7,
+        n=1,
+        stop=None,
+        timeout=10
+    )
+    return response.choices[0].text.strip()
 
 
 
 
-
-
+    
