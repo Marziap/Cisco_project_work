@@ -11,16 +11,27 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+dbname = os.getenv("DB_NAME")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSW")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
 access_token = os.getenv("WEBEX_TOKEN")
-
 bot_token = os.getenv("BOT_TOKEN")
-
 auth_umbrella = os.getenv("UMBRELLA_AUTH")
-
 openai.api_key =  os.getenv("OPENAI_TOKEN")
 
-room_id = None
-json_data= None
+
+# Connessione al database
+conn = psycopg2.connect(
+    dbname=dbname,
+    user=user,
+    password=password,
+    host=host,
+    port=port
+)
+
 
 def test_token(access_token):
     url = 'https://webexapis.com/v1/people/me'
@@ -93,11 +104,11 @@ def create_room(title):
     }
     params={'title': title}
     res = requests.post(url, headers=headers, json=params)
-    response_data = res.json()
-    global room_id
-    room_id = response_data['id']
-    #print(json.dumps(res.json(), indent=4))
-    return room_id
+    if res.status_code != 200:
+        print(json.dumps(res.json(), indent=4))
+        return
+    else:
+        return (res.json())['id']
 
 def list_room_members(room_id):
     url = 'https://webexapis.com/v1/memberships'
@@ -107,8 +118,7 @@ def list_room_members(room_id):
     }
     params = {'roomId': room_id}
     res = requests.get(url, headers=headers, params=params)
-    #print(json.dumps(res.json(), indent=4))
-    return res.json()
+    return print(json.dumps(res.json(), indent=4))
 
 def add_user(person_email, room_id):
     url = 'https://webexapis.com/v1/memberships'
@@ -118,21 +128,23 @@ def add_user(person_email, room_id):
     }
     params = {'roomId': room_id, 'personEmail': person_email}
     res = requests.post(url, headers=headers, json=params)
-    #print(json.dumps(res.json(), indent=4))
+    if res.status_code != 200:
+        print(json.dumps(res.json(), indent=4))
     return
 
-def send_message(access_token, room_id, message):
+def send_message(room_id, message):
     url = 'https://webexapis.com/v1/messages'
     headers = {
-    'Authorization': 'Bearer {}'.format(access_token),
+    'Authorization': 'Bearer {}'.format(access_token), #PROVA A MANDARE MEX SENZA ACCESS TOKEN NEI PARAMS
     'Content-Type': 'application/json',
     }
     params = {'roomId': room_id, 'markdown': '``` txt\n' + message + '\n```'}
     res = requests.post(url, headers=headers, json=params)
-    #print(res.json())
+    if res.status_code != 200:
+        print(json.dumps(res.json(), indent=4))
     return
 
-def send_file(access_token, room_id):
+def send_file(room_id):
      url = 'https://webexapis.com/v1/messages'
 
      m = MultipartEncoder({'roomId': room_id,
@@ -147,23 +159,7 @@ def send_file(access_token, room_id):
      return res.text
 
 def get_mails_db(ruolo):
-    # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
-    
-    try:
-        # Connessione al database
-        conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-        
+    try:        
         # Creazione di un cursore per eseguire query
         cur = conn.cursor()
 
@@ -175,7 +171,6 @@ def get_mails_db(ruolo):
 
         # Chiusura del cursore e connessione al database
         cur.close()
-        conn.close()
 
         # Stampa una frase se la connessione è avvenuta con successo
         print('Connessione al database avvenuta con successo!')
@@ -186,24 +181,8 @@ def get_mails_db(ruolo):
         print('Errore durante la connessione al database:', e)
         return []
 
-def update_score_db(mail):
-    # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
-    
+def update_score_db(mail):  
     try:
-        # Connessione al database
-        conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-
         # Creazione di un cursore per eseguire query
         cur = conn.cursor()
         
@@ -218,7 +197,6 @@ def update_score_db(mail):
         # Chiusura del cursore e connessione al database
         conn.commit()
         cur.close()
-        conn.close()
 
         # Stampa una frase se la connessione è avvenuta con successo
         #print('score updated')
@@ -233,23 +211,8 @@ def update_score_db(mail):
         return []
 
 def update_dispo_db(mail):
-    # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
     
-    try:
-        # Connessione al database
-        conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-        
+    try:        
         # Creazione di un cursore per eseguire query
         cur = conn.cursor()
         # Esempio di esecuzione di una query
@@ -261,7 +224,6 @@ def update_dispo_db(mail):
         # Chiusura del cursore e connessione al database
         conn.commit()
         cur.close()
-        conn.close()
 
         # Stampa una frase se la connessione è avvenuta con successo
         #print('dispo updated')
@@ -272,9 +234,8 @@ def update_dispo_db(mail):
         print('Errore durante la connessione al database:', e)
         return []
 
-def ListAllActivity(ip, time_to, time_from, limit, verdict):
+def list_all_activity(ip, time_to, time_from, limit, verdict):
     url = "https://api.umbrella.com/reports/v2/activity?from={}&to={}&limit={}&ip={}&verdict={}".format(time_from, time_to, limit, ip, verdict)
-
 
     umbrella_tk = update_umbrellaTK()
     headers = {
@@ -302,19 +263,22 @@ def ListAllActivity(ip, time_to, time_from, limit, verdict):
 
     return list
 
-def createSocket(host, port):
-    # Crea un socket TCP/IP
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def update_umbrellaTK():
+    url = "https://api.umbrella.com/auth/v2/token"
+    payload = 'grant_type=client_credentials'
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+        "Authorization": f"Basic {auth_umbrella}"
+    }
+    response = requests.request('POST', url, headers=headers, data = payload)
+    token = response.json()
+    if token == None:
+        print ("ERROR IN THE CREATION OF THE UMBRELLA TOKEN.")
+    else:
+        return token['access_token']
 
-    # Associa il socket all'indirizzo e alla porta desiderati
-    server_socket.bind((host, port))
-
-    # Mette il socket in ascolto
-    server_socket.listen(1)
-
-    return server_socket
-
-def warRoom(date, time):
+def war_room(date, time):
     room_id = create_room("War Room {} {}".format(date, time))
 
     mails = get_mails_db("analyst")
@@ -326,31 +290,9 @@ def warRoom(date, time):
         #print("User {} added".format(mail))
         update_score_db(mail)
         update_dispo_db(mail)
-    
-    add_user("matictest@webex.bot", room_id)  
+
+    add_user("bot_maticmind@webex.bot", room_id)
     return room_id
-
-def data_from_client(client_socket):
-    # Receive data sent by the client
-    data = client_socket.recv(1024).decode()
-
-    global json_data
-    # Process the received JSON data
-    json_data = json.loads(data)
-
-    return
-
-def update_umbrellaTK():
-    url = "https://api.umbrella.com/auth/v2/token"
-    payload = 'grant_type=client_credentials'
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json",
-        "Authorization": f"Basic {auth_umbrella}"
-    }
-    response = requests.request('POST', url, headers=headers, data = payload)
-    token = json.loads(response.text)
-    return token['access_token']
 
 def gpt3_chat(input_message):
     response = openai.Completion.create(

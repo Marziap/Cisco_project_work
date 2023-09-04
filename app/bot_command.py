@@ -28,7 +28,7 @@ class Chat(Command):
     def __init__(self):
         super().__init__(
             command_keyword="chat",
-            help_message="chiedi qualcosa a chat gpt",
+            help_message="Ask something to chatGPT",
             card=None,
         )
         
@@ -41,8 +41,8 @@ class Chat(Command):
 class Add(Command):
     def __init__(self):
         super().__init__(
-            command_keyword = "add",
-            help_message = "Aggiungi l'utente di cui hai bisogno.",
+            command_keyword = "addUser",
+            help_message = "Add a user by their email",
             card = ADD_CARD,
         )
         
@@ -57,8 +57,8 @@ class Add(Command):
 class AddRole(Command):
     def __init__(self):
         super().__init__(
-            command_keyword = "aggiungi",
-            help_message = "Aggiungi l'utente di cui hai bisogno.",
+            command_keyword = "addRole",
+            help_message = "Add only one user for a specific role.",
             card = ADDROLE_CARD,
         )
     def execute(self, message, attachment_actions, activity):
@@ -132,7 +132,7 @@ class GetActivity(Command):
         if verdict == "all" :
             verdict = "allowed,blocked,proxied"
         
-        list = functions.ListAllActivity(device, date_to, date_from, 1000, verdict)
+        list = functions.list_all_activity(device, date_to, date_from, 1000, verdict)
         var = str(list)
 
         file = open("./files/activity.txt", "w+")
@@ -146,7 +146,7 @@ class GetActivity(Command):
         file.write(var)
         file.close()
 
-        text = functions.send_file(functions.access_token, roomId)
+        text = functions.send_file(roomId)
 
         
         return

@@ -1,5 +1,6 @@
 import os
 import functions
+import json
 from flask import Flask, request, Response
 
 from dotenv import load_dotenv
@@ -10,17 +11,6 @@ load_dotenv()
 # create flask instance
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URI")
-
-# db connection ana start application
-from models import db, User
-import json
-
-db.init_app(app)
-
-# create all models
-with app.app_context():
-    db.create_all()
 
 # this is a test endpoint. Add your logic to handle the incident correctly
 # As a reference check routers.py file in this repo to learn how to interact with the database:
@@ -31,8 +21,6 @@ with app.app_context():
 
         #TODO: COMANDO DI BAN PER UN IP #DA CAPIRE COME FARE LA RICHIESTA, DATO UN IP AVERE LE SUE INFORMAZIONI DI UMBRELLA
 
-        #TODO: CRITERIO DI SCELTA DAL DATABASE
-
         #TODO: ATTIVARE UNA CALL
 
 
@@ -41,12 +29,11 @@ def test() -> str:
     # get incident data from request as json
     data = request.get_json()
 
-    #PENSAVO CHE POTREMMO ANCHE NON PASSARE DATE & TIME AL JSON, IN MODO TALE DA DECOMPRIMERE TUTTO QUI DA NOW.
     # create room & add users, bot
-    room_id = functions.warRoom(data['date'], data['time'])
+    room_id = functions.war_room(data['date'], data['time'])
     
     # send first message
-    functions.send_message(os.getenv("BOT_TOKEN"), room_id, f"Incident del giorno: {data['incident']}\nAvvenuto alle ore {data['time']} del {data['date']}\nSu macchina con ip: {data['ip']}\nRischio valutato di livello: {data['risk']}")
+    functions.send_message(room_id, f"Incident del giorno: {data['incident']}\nAvvenuto alle ore {data['time']} del {data['date']}\nSu macchina con ip: {data['ip']}\nRischio valutato di livello: {data['risk']}")
 
 
     return Response(json.dumps(room_id), mimetype="application/json"), 200
