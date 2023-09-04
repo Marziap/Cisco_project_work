@@ -6,11 +6,13 @@ services:
       context: .
       dockerfile: Dockerfile.rest
     environment:
-      - DB_URI=postgresql://postgres:ProgettoCyber!@37.119.114.12:5432/db_matic
-      - BOT_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - DB_URI=postgresql://postgres:ProgettoCyber2023!@postgresql:5432/postgres?sslmode=disable
+      - BOT_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
       - FLASK_RUN_PORT=3000
     ports:
       - 3000:3000/tcp
+    depends_on:
+      - postgresql
     restart: always
 
   bot:
@@ -18,7 +20,31 @@ services:
       context: .
       dockerfile: Dockerfile.bot
     environment:
-      - DB_URI=postgresql://postgres:ProgettoCyber!@37.119.114.12:5432/db_matic
-      - BOT_TOKEN=ZmRiZTFkYTMtNzEzMi00NDhkLWE5MDQtMWE2MzRmMjBmNTdlNGQyM2RkNDYtNzRm_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - DB_PASSW=ProgettoCyber2023!
+      - DB_HOST=postgresql
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PORT=5432
+      - BOT_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - OPENAI_TOKEN=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
+      - WEBEX_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+      - UMBRELLA_AUTH='ZTc5ODRlY2E3MDQwNDJlNjg3ZmE0MDIyMTE4ZGM1ZTM6ZTRjNjg5NjU2YmQxNGZkYWIwZWQ1YjViNWNkNjA1M2U='
+    depends_on:
+      - postgresql
     restart: always
-      
+  
+  postgresql:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=CyberProject2023!
+    volumes: 
+      - ./db_dump.sql:/docker-entrypoint-initdb.d/db_dump.sql
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "postgres", "-U", "root"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+ 

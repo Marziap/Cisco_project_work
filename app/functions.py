@@ -11,15 +11,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+dbname = os.getenv("DB_NAME")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSW")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
 access_token = os.getenv("WEBEX_TOKEN")
-
 bot_token = os.getenv("BOT_TOKEN")
-
 auth_umbrella = os.getenv("UMBRELLA_AUTH")
+openai.api_key = os.getenv("OPENAI_TOKEN")
 
-openai.api_key =  os.getenv("OPENAI_TOKEN")
 
-room_id = None
 json_data= None
 
 def test_token(access_token):
@@ -94,7 +96,6 @@ def create_room(title):
     params={'title': title}
     res = requests.post(url, headers=headers, json=params)
     response_data = res.json()
-    global room_id
     room_id = response_data['id']
     #print(json.dumps(res.json(), indent=4))
     return room_id
@@ -148,12 +149,6 @@ def send_file(access_token, room_id):
 
 def get_mails_db(ruolo):
     # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
-    
     try:
         # Connessione al database
         conn = psycopg2.connect(
@@ -188,12 +183,6 @@ def get_mails_db(ruolo):
 
 def update_score_db(mail):
     # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
-    
     try:
         # Connessione al database
         conn = psycopg2.connect(
@@ -234,11 +223,6 @@ def update_score_db(mail):
 
 def update_dispo_db(mail):
     # Configurazione della connessione al database
-    dbname = 'db_matic'
-    user = 'postgres'
-    password = os.getenv("DB_PASSW")
-    host = os.getenv("DB_HOST")
-    port = '5432'
     
     try:
         # Connessione al database
