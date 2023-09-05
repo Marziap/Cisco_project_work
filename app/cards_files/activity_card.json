@@ -47,7 +47,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "DAL",
+                            "text": "FROM",
                             "wrap": true,
                             "horizontalAlignment": "Center",
                             "size": "Large",
@@ -56,7 +56,7 @@
                         },
                         {
                             "type": "TextBlock",
-                            "text": "AL",
+                            "text": "TO",
                             "wrap": true,
                             "horizontalAlignment": "Center",
                             "size": "Large",

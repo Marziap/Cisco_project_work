@@ -5,7 +5,7 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "Aggiungi un nuovo utente alla stanza",
+            "text": "Add a new user by their role",
             "wrap": true,
             "size": "Medium",
             "weight": "Bolder"
@@ -26,7 +26,7 @@
                     "value": "specialist"
                 }
             ],
-            "placeholder": "Scegli ruolo",
+            "placeholder": "choose a role",
             "id": "ruoli"
         },
         {
@@ -34,10 +34,10 @@
             "actions": [
                 {
                     "type": "Action.Submit",
-                    "title": "Aggiungi Ruolo",
+                    "title": "Submit",
                     "style": "positive",
                     "data": {
-                        "callback_keyword": "aggiungi"
+                        "callback_keyword": "addrole"
                     }
                 }
             ]

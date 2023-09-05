@@ -7,12 +7,19 @@ services:
       dockerfile: Dockerfile.rest
     environment:
       - DB_PASSW=ProgettoCyber2023!
+
       - DB_HOST=postgresql
+
       - DB_NAME=postgres
+
       - DB_USER=postgres
+
       - DB_PORT=5432
-      - BOT_TOKEN=ZTQ1OWQyYTMtOGExYS00MGY0LWI2NzYtMTM0NWEwMDg1NGE3NTcyMTEzMzYtMTJi_PE93_028ef8d7-2681-410e-94a1-aba330df7a76
-      - WEBEX_TOKEN=ZTQ1OWQyYTMtOGExYS00MGY0LWI2NzYtMTM0NWEwMDg1NGE3NTcyMTEzMzYtMTJi_PE93_028ef8d7-2681-410e-94a1-aba330df7a76
+
+      - BOT_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+
+      - WEBEX_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+
       - FLASK_RUN_PORT=3000
     ports:
       - 3000:3000/tcp
@@ -26,13 +33,21 @@ services:
       dockerfile: Dockerfile.bot
     environment:
       - DB_PASSW=ProgettoCyber2023!
+
       - DB_HOST=postgresql
+
       - DB_NAME=postgres
+
       - DB_USER=postgres
+
       - DB_PORT=5432
-      - BOT_TOKEN=ZTQ1OWQyYTMtOGExYS00MGY0LWI2NzYtMTM0NWEwMDg1NGE3NTcyMTEzMzYtMTJi_PE93_028ef8d7-2681-410e-94a1-aba330df7a76
+
+      - BOT_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+
       - OPENAI_TOKEN=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
-      - WEBEX_TOKEN=ZTQ1OWQyYTMtOGExYS00MGY0LWI2NzYtMTM0NWEwMDg1NGE3NTcyMTEzMzYtMTJi_PE93_028ef8d7-2681-410e-94a1-aba330df7a76
+
+      - WEBEX_TOKEN=ZWNmYThlYTItODYyZi00OTNiLTkzN2YtNWJlMDEzODQwZGZkYzEyN2NjYWYtYjIy_PF84_9db17efa-dc2f-4ca3-90ae-30a52866391a
+
       - UMBRELLA_AUTH=MWYyMzZjMjFhOTg1NGE2ZmFjODBlYWE3OTNkZjAzMzc6NGJlMGE3NDBjZTkzNGIxNmE5YjU0MzIzOWQ1ZTY3OWI=
                       
     depends_on:

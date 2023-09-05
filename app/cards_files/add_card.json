@@ -5,14 +5,14 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "Aggiungi un nuovo utente alla stanza",
+            "text": "Add a new user",
             "wrap": true,
             "size": "Medium",
             "weight": "Bolder"
         },
         {
             "type": "Input.Text",
-            "placeholder": "inserisci la mail dell'utente",
+            "placeholder": "Please enter the user's email",
             "id": "mail"
         },
         {
@@ -20,10 +20,10 @@
             "actions": [
                 {
                     "type": "Action.Submit",
-                    "title": "Aggiungi",
+                    "title": "Submit",
                     "style": "positive",
                     "data": {
-                        "callback_keyword": "add"
+                        "callback_keyword": "adduser"
                     }
                 }
             ]

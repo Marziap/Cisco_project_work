@@ -38,9 +38,13 @@ def test() -> str:
 
     return Response(json.dumps(room_id), mimetype="application/json"), 200
 
-@app.route('/prova/<ruolo>', methods=['GET'])
-def getMails(ruolo) -> str:
-    mails = functions.get_mails_db(ruolo)
+@app.route('/webhook', methods=['POST'])
+def catch_webhook() -> str:
+    #get the frame from the webhook
+    data = request.get_json()
+    print(json.dumps(data, indent=4))
 
-    return Response(json.dumps(mails), mimetype="application/json"), 200
+    return Response(json.dumps(data), mimetype="application/json"), 200
+
+
 

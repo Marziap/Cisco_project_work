@@ -41,7 +41,7 @@ class Chat(Command):
 class Add(Command):
     def __init__(self):
         super().__init__(
-            command_keyword = "addUser",
+            command_keyword = "adduser",
             help_message = "Add a user by their email",
             card = ADD_CARD,
         )
@@ -57,7 +57,7 @@ class Add(Command):
 class AddRole(Command):
     def __init__(self):
         super().__init__(
-            command_keyword = "addRole",
+            command_keyword = "addrole",
             help_message = "Add only one user for a specific role.",
             card = ADDROLE_CARD,
         )
@@ -166,3 +166,4 @@ class Done(Command):
             functions.update_dispo_db(el['personEmail'])
             
         return 
+    

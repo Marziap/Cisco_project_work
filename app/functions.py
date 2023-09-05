@@ -149,7 +149,7 @@ def send_file(room_id):
 
      m = MultipartEncoder({'roomId': room_id,
                            'text':"File contenente le activity dell'ip specificato",
-                           'files': ('AllActivity.txt', open('./files/activity.txt', 'rb'), 'text/plain')
+                           'files': ('AllActivity.csv', open('./files/activity.csv', 'rb'), 'text/csv')
                          })
      headers = {
         'Authorization': 'Bearer {}'.format(access_token),
@@ -291,7 +291,7 @@ def war_room(date, time):
         update_score_db(mail)
         update_dispo_db(mail)
 
-    add_user("bot_maticmind@webex.bot", room_id)
+    add_user("matictest@webex.bot", room_id)
     return room_id
 
 def gpt3_chat(input_message):
@@ -306,7 +306,40 @@ def gpt3_chat(input_message):
     )
     return response.choices[0].text.strip()
 
+def create_meeting(roomId, title, time_start, time_end, password):
+    url='https://webexapis.com/v1/meetings'
+    headers = {
+    'Authorization': 'Bearer {}'.format(access_token),
+    'Content-Type': 'application/json'
+    }
+    timezone='Europe/Rome' #SE CI FOSSE NECESSITA' DI CAMBIARE REGIONE SI PUO' SEMPLICEMENTE AGGIORNARE QUESTO PARAMETRO CON IL FUSORARIO DESIDERATO
+    if password.isspace() != True:
+        params = {'roomId': roomId, 'title': title, 'start': time_start, 'end': time_end, 'timezone': timezone, 'enabledAutoRecordMeeting': True}
+    else:
+        params = {'roomId': roomId, 'title': title, 'password': password, 'start': time_start, 'end': time_end, 'timezone': timezone, 'enabledAutoRecordMeeting': True}
 
+    res = requests.post(url, headers=headers, json=params)
+    if res.status_code != 200:
+        print(json.dumps(res.json(), indent=4))
+        return
+    else:
+        return (json.dumps(res.json(), indent=4))
 
-
-    
+def list_recordings(meetingId):
+    url = 'https://webexapis.com/v1/recordings'
+    headers = {
+    'Authorization': 'Bearer {}'.format(access_token),
+    'Content-Type': 'application/json'
+    }
+    params = {'meetingId':meetingId}
+    res = requests.get(url, headers=headers, params=params)
+    if res.status_code != 200:
+        return (print(json.dumps(res.json(), indent=4)))
+    else :
+        dict = ((res.json())['items'])[0]
+        list = []
+        list.append(dict['downloadUrl'])
+        list.append(dict['playbackUrl'])
+        list.append(dict['password'])
+        print(json.dumps(res.json(), indent=4))
+        return list
